@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Product App</title>
+	<meta charset="utf-8" />
+</head>
+<body>
+    <div>
+        <h2>All Products</h2>
+        <ul id="products" />
+    </div>
+    <div>
+        <h2>Search by ID</h2>
+        <input type="text" id="prodId" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="product" />
+    </div>
+     <div>
+        <h2>Add item</h2>
+
+        Id <input type="text" id="newId" size="5" /> <br />
+        Name <input type="text" id="newName" size="5" /><br />
+        Price<input type="text" id="newPrice" size="5" /><br />
+         Category<input type="text" id="newCat" size="5" /><br />
+        <input type="button" value="insert" onclick="insert();" />
+        <p id="msg" />
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var uri = 'api/products/getAllProduct';
+
+    $(document).ready(function () {
+      // Send an AJAX request
+      $.getJSON(uri)
+          .done(function (data) {
+            // On success, 'data' contains a list of products.
+            $.each(data, function (key, item) {
+              // Add a list item for the product.
+              $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+            });
+          });
+    });
+
+    function formatItem(item) {
+        return item.Id + ', ' + item.ProductName + ', ' + item.ProductCategory + ', ' + item.ProductPrice + ' $';
+    }
+    
+    function find() {
+        var uri3 = 'api/products/getProduct';
+      var id = $('#prodId').val();
+      $.getJSON(uri3 + '/' + id)
+          .done(function (data) {
+            $('#product').text(formatItem(data));
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#product').text('Error: ' + err);
+          });
+    }
+    function insert() {
+        var id = $('#newId').val();
+        var name = $('#newName').val();
+        var category = $('#newCat').val();
+        var price = $('#newPrice').val();
+        var uri2 = 'api/products/PostNewItem/' + id + '/' + name + '/' + category + '/' + price;
+        $.ajax({
+            type: 'POST',
+            url: uri2,         
+            success: function (data) { alert('data: ' + data); },
+            contentType: "application/json",
+            dataType: 'json'
+        });
+
+    }
+    </script>
+</body>
+</html>
